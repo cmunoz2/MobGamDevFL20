@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 // adds a rigidbody component
 [RequireComponent(typeof(Rigidbody))]           
@@ -16,12 +17,21 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     bool isGrounded = false;
 
+    public int score = 0;
+    TextMeshPro scoreText;
+
+    Vector3 startPosition;
+
     // Start is called before the first frame update
     void Start()
     {
         Debug.Log("Player Controller Starting Up!");
 
         rb = this.GetComponent<Rigidbody>();
+
+        scoreText = GameObject.Find("scoreText").GetComponent<TextMeshPro>();
+
+        startPosition = this.transform.position;
     }
 
     // Update is called once per frame
@@ -54,6 +64,18 @@ public class PlayerController : MonoBehaviour
     void OnTriggerEnter(Collider other) {
         if(other.gameObject.CompareTag("Ground")) {
             isGrounded = true;
+        }
+        else if(other.gameObject.CompareTag("Pickup")){
+            score += 100;
+            scoreText.text = "Score: " + score;
+            Destroy(other.gameObject);
+        }
+        else if(other.gameObject.CompareTag("Finish")){
+            //Resets game,, Let player keep High Score
+            Debug.Log("Starting Level Over");
+            score = 0;
+            this.transform.position = startPosition;
+            Application.LoadLevel(0);
         }
     }
 }
